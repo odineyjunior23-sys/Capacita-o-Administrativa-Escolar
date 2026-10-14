@@ -91,7 +91,7 @@ const GR=[
 ['c6','Conferência Fiscal:','Validação de Notas Fiscais (dados da APM, descrição, certidões do fornecedor)'],
 ['c7','Montagem da Pasta:','Organização das peças obrigatórias e formulários do PDDE/Sistemas'],
 ['c8','Conciliação Bancária:','Entendimento do extrato, vinculação de pagamentos (PIX/Cheque/TED) e rendimentos']]}];
-const QA=['Na sua rotina semanal, qual é a tarefa administrativa que toma mais tempo ou gera mais dúvidas na sua equipe?','Existe algum sistema, sistema governamental ou plataforma específica em que você sente necessidade de suporte imediato?','Qual é o melhor formato para a realização dessas capacitações?','Período preferencial','Descreva livremente: existe alguma tarefa, procedimento ou situação específica do seu dia a dia na escola em que você sente muita dificuldade e gostaria de receber um treinamento ou passo a passo prático?'];
+const QA=['Existe algum sistema, sistema governamental ou plataforma específica em que você sente necessidade de suporte imediato?','Qual é o melhor formato para a realização dessas capacitações?','Período preferencial','Descreva livremente: existe alguma tarefa, procedimento ou situação específica do seu dia a dia na escola em que você sente muita dificuldade e gostaria de receber um treinamento ou passo a passo prático?'];
 /* ====== UTIL ====== */
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -128,11 +128,10 @@ function userForm(){
  ${GR.map(g=>`<h3>${g.t}</h3><table class="gt"><thead><tr><th>Tema</th><th>${LV.n}</th><th>${LV.m}</th><th>${LV.g}</th></tr></thead><tbody>
  ${g.i.map(i=>`<tr id="r_${i[0]}"><td><b>${esc(i[1])}</b>${i[2]?`<span class="d">${esc(i[2])}</span>`:''}</td>${['n','m','g'].map(k=>`<td class="c"><label><input type="radio" name="${i[0]}" value="${k}"><span class="lv">${LV[k]}</span></label></td>`).join('')}</tr>`).join('')}</tbody></table>`).join('')}</div>
  <div class="card" id="k3"><h2>Bloco 3 – Desafios e Sugestões</h2>
- <p class="q">${QA[0]}</p><textarea id="t1"></textarea>
- <p class="q">${QA[1]}</p><input type="text" id="t2">
- <p class="q">${QA[2]}</p><p class="hint">Você pode marcar mais de uma opção.</p>${FORMATOS.map(f=>opt('checkbox','formato',f)).join('')}
- <p class="q">${QA[3]}</p><div class="row2">${PERIODOS.map(p=>opt('checkbox','periodo',p)).join('')}</div>
- <p class="q">${QA[4]}</p><textarea id="t3"></textarea></div>
+ <p class="q">${QA[0]}</p><input type="text" id="t2">
+ <p class="q">${QA[1]}</p><p class="hint">Você pode marcar mais de uma opção.</p>${FORMATOS.map(f=>opt('checkbox','formato',f)).join('')}
+ <p class="q">${QA[2]}</p><div class="row2">${PERIODOS.map(p=>opt('checkbox','periodo',p)).join('')}</div>
+ <p class="q">${QA[3]}</p><textarea id="t3"></textarea></div>
  <p class="err" id="e1"></p><button class="btn gold" id="send">Enviar respostas</button>`;
  $$('input[name=cargo]').forEach(r=>r.onchange=()=>{$('#outro').hidden=r.value!=='Outro'||!r.checked;if(!$('#outro').hidden)$('#outro').focus()});
  $('#send').onclick=send;
@@ -141,7 +140,7 @@ const val=n=>(document.querySelector(`input[name=${n}]:checked`)||{}).value||'';
 const vals=n=>$$(`input[name=${n}]:checked`).map(x=>x.value);
 async function send(){
  $$('.bad').forEach(x=>x.classList.remove('bad'));
- const d={nome,unidade:val('unidade'),cargo:val('cargo'),cargoOutro:$('#outro').value.trim(),grade:{},tarefa:$('#t1').value.trim(),sistema:$('#t2').value.trim(),formatos:vals('formato'),periodos:vals('periodo'),descricao:$('#t3').value.trim()};
+ const d={nome,unidade:val('unidade'),cargo:val('cargo'),cargoOutro:$('#outro').value.trim(),grade:{},sistema:$('#t2').value.trim(),formatos:vals('formato'),periodos:vals('periodo'),descricao:$('#t3').value.trim()};
  let first=null;const bad=(el)=>{el.classList.add('bad');first=first||el};
  if(!d.unidade||!d.cargo||(d.cargo==='Outro'&&!d.cargoOutro))bad($('#k1'));
  GR.forEach(g=>g.i.forEach(i=>{d.grade[i[0]]=val(i[0]);if(!d.grade[i[0]])bad($('#r_'+i[0]))}));
