@@ -30,7 +30,7 @@ textarea{min-height:90px;resize:vertical}
 .btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}.btn.ghost:hover{background:#eaf3fb}
 .btn.red{background:var(--err)}.btn.sm{padding:.4rem .8rem;font-size:.9rem}
 .gt{width:100%;border-collapse:collapse;margin-top:.4rem}
-.gt th{background:var(--navy);color:#fff;font-size:.82rem;padding:.55rem;text-align:center}.gt th:first-child{text-align:left}
+.gt th{background:var(--navy);color:#fff;font-size:.82rem;padding:.55rem;text-align:center}.gt th:first-child{text-align:left;font-size:1.15rem;font-weight:700}
 .gt td{border-bottom:1px solid var(--line);padding:.55rem;vertical-align:middle}
 .gt td.c{text-align:center;width:17%}.gt td.c label{display:block;cursor:pointer;padding:.3rem}
 .gt td.c input{accent-color:var(--blue);width:18px;height:18px}
@@ -71,7 +71,7 @@ const CFG={url:'https://ypusjpemvupypoydbypg.supabase.co',key:'eyJhbGciOiJIUzI1N
 const LS='diagcap_regs_v1';
 /* ====== DADOS DO FORMULÁRIO ====== */
 const UNID=['Unidade Escolar','CIEI'];
-const CARGOS=['Diretora / Gestora','Secretária Escolar / Auxiliar de Secretaria','Coordenador(a) Pedagógica','Presidente / Tesoureiro(a) ou Membro da APM / Unidade Executora','Outro'];
+const CARGOS=['Diretores / Gestores','Secretário(a) / Auxiliar de Secretaria','Coordenador(a) Pedagógica','Presidente / Tesoureiro(a) ou Membro da APM / Unidade Executora'];
 const FORMATOS=['Oficinas presenciais e práticas (com uso de computador)','Encontros virtuais (síncronos)','Materiais impressos / Manuais passo a passo com modelos editáveis'];
 const PERIODOS=['Matutino','Vespertino'];
 const LV={n:'Nenhuma dificuldade',m:'Dificuldade média',g:'Muita dificuldade (gostaria de treinamento)'};
@@ -123,8 +123,7 @@ function userForm(){
  $('#who').hidden=false;$('#who').textContent='Respondendo como: '+nome;
  $('#app').innerHTML=`<div class="card" id="k1"><h2>Bloco 1 – Identificação Geral</h2>
  <p class="q">Tipo de unidade</p><div class="row2">${UNID.map(u=>opt('radio','unidade',u)).join('')}</div>
- <p class="q">Qual é o seu cargo / função atual na unidade?</p>${CARGOS.map(c=>opt('radio','cargo',c)).join('')}
- <input type="text" id="outro" placeholder="Outro: descreva o cargo / função" hidden></div>
+ <p class="q">Qual é o seu cargo / função atual na unidade?</p>${CARGOS.map(c=>opt('radio','cargo',c)).join('')}</div>
  <div class="card" id="k2"><h2>Bloco 2 – Levantamento de Necessidades Práticas</h2>
  <p class="hint">Marque o grau de dificuldade que você sente em relação a cada tema a seguir.</p>
  ${GR.map(g=>`<h3>${g.t}</h3><table class="gt"><thead><tr><th>Tema</th><th>${LV.n}</th><th>${LV.m}</th><th>${LV.g}</th></tr></thead><tbody>
@@ -135,16 +134,15 @@ function userForm(){
  <p class="q">${QA[2]}</p><div class="row2">${PERIODOS.map(p=>opt('checkbox','periodo',p)).join('')}</div>
  <p class="q">${QA[3]}</p><textarea id="t3"></textarea></div>
  <p class="err" id="e1"></p><button class="btn gold" id="send">Enviar respostas</button>`;
- $$('input[name=cargo]').forEach(r=>r.onchange=()=>{$('#outro').hidden=r.value!=='Outro'||!r.checked;if(!$('#outro').hidden)$('#outro').focus()});
  $('#send').onclick=send;
 }
 const val=n=>(document.querySelector(`input[name=${n}]:checked`)||{}).value||'';
 const vals=n=>$$(`input[name=${n}]:checked`).map(x=>x.value);
 async function send(){
  $$('.bad').forEach(x=>x.classList.remove('bad'));
- const d={nome,unidade:val('unidade'),cargo:val('cargo'),cargoOutro:$('#outro').value.trim(),grade:{},sistema:$('#t2').value.trim(),formatos:vals('formato'),periodos:vals('periodo'),descricao:$('#t3').value.trim()};
+ const d={nome,unidade:val('unidade'),cargo:val('cargo'),grade:{},sistema:$('#t2').value.trim(),formatos:vals('formato'),periodos:vals('periodo'),descricao:$('#t3').value.trim()};
  let first=null;const bad=(el)=>{el.classList.add('bad');first=first||el};
- if(!d.unidade||!d.cargo||(d.cargo==='Outro'&&!d.cargoOutro))bad($('#k1'));
+ if(!d.unidade||!d.cargo)bad($('#k1'));
  GR.forEach(g=>g.i.forEach(i=>{d.grade[i[0]]=val(i[0]);if(!d.grade[i[0]])bad($('#r_'+i[0]))}));
  if(first){$('#e1').textContent='Faltam respostas: complete os itens destacados em vermelho (identificação e grau de dificuldade de todos os temas).';first.scrollIntoView({behavior:'smooth',block:'center'});return}
  $('#e1').textContent='';$('#send').disabled=true;$('#send').textContent='Enviando…';
